@@ -52,25 +52,18 @@ count count_uut(
 
 initial begin
     reset = 1;
-    #100;
+    #1000;
     clk = 0;
     pause = 0;
     adjust = 0;
     select = 0;
     clk_adj = 0;
     reset = 0;
-    
     #100;
     
 end
 
 always begin
-    #10 clk = ~clk;
-    /*
-    while(itr != 100) begin
-        $display("Num iterations: %d", itr);
-        itr = itr + 1;
-    end
-    */
+    #100000 clk = ~clk;
 end
 endmodule

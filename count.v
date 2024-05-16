@@ -43,31 +43,20 @@ module count(
     
     wire clock;
     
-    // Initialize clock
-    //TODO
-    
     reg paused = 0;
-    always @ (posedge clock or posedge reset) 
-    begin
-        if (paused) begin
-            paused <= ~paused;        // Turn on or off 'pause'
-        end
-    end
+
     
     // Set up reset
-    always @(posedge clock or posedge reset) 
+    always @(posedge clk or posedge reset) 
         begin
         
-        $display("lebron jaes: %b", sec0cnt);
         if (reset) begin
             min1cnt = 4'b0000; //Reset all time values to 0
             min0cnt = 4'b0000;
             sec0cnt = 4'b0000;
             sec1cnt = 4'b0000;
-        end
-        
+        end        
         else begin
-        $display("Reset is 0");
             if (sec0cnt == 9 && sec1cnt == 5) begin // If need to overflow into minutes
                 sec0cnt <= 0;
                 sec1cnt <= 0; //reset seconds to 0
@@ -97,6 +86,7 @@ module count(
                 end
            
        end
+       $display("%d%d:%d%d", min1cnt, min0cnt, sec1cnt, sec0cnt);
 
        end
        
@@ -104,10 +94,6 @@ module count(
        assign min0 = min0cnt;
        assign sec1 = sec1cnt;
        assign sec0 = sec0cnt;
-       
-    always @(sec0cnt) begin
-        $display("buster bose: %b", sec0cnt);
-    end
 
              
 
