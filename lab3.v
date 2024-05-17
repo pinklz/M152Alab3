@@ -40,6 +40,8 @@ module lab3(
     wire [6:0] sevenmin0;
     wire [6:0] sevensec0;
     wire [6:0] sevensec1;
+
+    reg [1:0] which_digit = 2'b00;
     
     seven min1(
         .dig(min1cnt),
@@ -64,6 +66,50 @@ module lab3(
     always @(posedge clk)  begin
         seven_seg_display <= sevensec0;
         an <= 4'b1110;
+
+        /*
+        if (which_digit == 0) begin
+            // switch digit
+            which_digit <= which_digit+1;
+            // Choose which 'anode' to light up
+            an <= 4'b0111;
+
+            // + light up with the correct digit
+            seven_seg_display <= sevenmin1;
+
+            end
+
+        if (which_digit == 1) begin
+            // switch digit
+            which_digit <= which_digit+1;
+            // Choose which 'anode' to light up
+            an <= 4'b1011;
+
+            // + light up with the correct digit
+            seven_seg_display <= sevenmin0;
+            end
+
+        if (which_digit == 2) begin
+            // switch digit
+            which_digit <= which_digit+1;
+            // Choose which 'anode' to light up
+            an <= 4'b1101;
+
+            // + light up with the correct digit
+            seven_seg_display <= sevensec1;
+            end
+
+        if (which_digit == 3) begin
+            // switch digit
+            which_digit <= which_digit+1;
+            // Choose which 'anode' to light up
+            an <= 4'b1110;
+
+            // + light up with the correct digit
+            seven_seg_display <= sevenmsec0;
+            end
+
+        */
     
     end
 endmodule
