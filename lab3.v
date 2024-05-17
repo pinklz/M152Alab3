@@ -70,7 +70,7 @@ module lab3(
         /*
         if (which_digit == 0) begin
             // switch digit
-            which_digit <= which_digit+1;
+            which_digit <= 1;
             // Choose which 'anode' to light up
             an <= 4'b0111;
 
@@ -81,7 +81,7 @@ module lab3(
 
         if (which_digit == 1) begin
             // switch digit
-            which_digit <= which_digit+1;
+            which_digit <= 2;
             // Choose which 'anode' to light up
             an <= 4'b1011;
 
@@ -91,7 +91,7 @@ module lab3(
 
         if (which_digit == 2) begin
             // switch digit
-            which_digit <= which_digit+1;
+            which_digit <= 3;
             // Choose which 'anode' to light up
             an <= 4'b1101;
 
@@ -101,7 +101,7 @@ module lab3(
 
         if (which_digit == 3) begin
             // switch digit
-            which_digit <= which_digit+1;
+            which_digit <= 0;
             // Choose which 'anode' to light up
             an <= 4'b1110;
 
