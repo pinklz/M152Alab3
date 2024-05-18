@@ -22,7 +22,7 @@
 
 module lab3(
     input clk,
-    input resett,
+    input reset,
     input pause,
     input select,
     input wire [1:0] adj,
@@ -40,8 +40,22 @@ module lab3(
     wire [6:0] sevenmin0;
     wire [6:0] sevensec0;
     wire [6:0] sevensec1;
+    
+    reg clock;
 
     reg [1:0] which_digit = 2'b00;
+    
+    count count_uut(
+        .reset(reset),
+        .pause(pause),
+        .adjust(adj),
+        .select(select),
+        .clk(clk),
+        .min0(min0cnt),
+        .min1(min1cnt),
+        .sec0(sec0cnt),
+        .sec1(sec1cnt)
+    );
     
     seven min1(
         .dig(min1cnt),
@@ -63,11 +77,13 @@ module lab3(
                  .seven_seg_display(sevensec0)
                 );
                 
-    always @(posedge clk)  begin
-        seven_seg_display <= sevensec0;
-        an <= 4'b1110;
-
-        /*
+    initial begin
+        //clock <= 0;
+        //#100 clock <= 1;
+    end
+                
+    always begin
+        //#100000 clock = ~clock;
         if (which_digit == 0) begin
             // switch digit
             which_digit <= 1;
@@ -106,10 +122,7 @@ module lab3(
             an <= 4'b1110;
 
             // + light up with the correct digit
-            seven_seg_display <= sevenmsec0;
+            seven_seg_display <= sevensec0;
             end
-
-        */
-    
     end
 endmodule

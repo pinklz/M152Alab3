@@ -47,16 +47,19 @@ module count(
 
     
     // Set up reset
-    always @(posedge clk or posedge reset) 
+    always @(posedge clk)// or posedge reset) 
         begin
         
-        if (reset) begin
-            min1cnt = 4'b0000; //Reset all time values to 0
-            min0cnt = 4'b0000;
-            sec0cnt = 4'b0000;
-            sec1cnt = 4'b0000;
-        end        
-        else begin
+        //reset
+        //if (1) begin
+            //min1cnt = 4'b0000; //Reset all time values to 0
+           // min0cnt = 4'b0000;
+           // sec0cnt = 4'b0000;
+           // sec1cnt = 4'b0000;
+        //end     
+        
+        //else begin
+        
             if (sec0cnt == 9 && sec1cnt == 5) begin // If need to overflow into minutes
                 sec0cnt <= 0;
                 sec1cnt <= 0; //reset seconds to 0
@@ -86,9 +89,9 @@ module count(
                 end
            
        end
-       $display("%d%d:%d%d", min1cnt, min0cnt, sec1cnt, sec0cnt);
+       //$display("%d%d:%d%d", min1cnt, min0cnt, sec1cnt, sec0cnt);
 
-       end
+       //end
        
        assign min1 = min1cnt;
        assign min0 = min0cnt;

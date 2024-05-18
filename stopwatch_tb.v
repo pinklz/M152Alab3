@@ -65,5 +65,6 @@ end
 
 always begin
     #100000 clk = ~clk;
+    $display("hello");
 end
 endmodule
