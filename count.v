@@ -45,9 +45,19 @@ module count(
     
     reg paused = 0;
 
+    // Check for adjust signal
+    always begin
+        if (adjust == 0) begin
+            clock = clk;
+        end
+        else begin
+            clock = clk_adj;
+        end
+    end
+
     
     // Set up reset
-    always @(posedge clk)// or posedge reset) 
+    always @(posedge clock)// or posedge reset) 
         begin
         
         //reset
