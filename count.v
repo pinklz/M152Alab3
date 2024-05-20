@@ -61,15 +61,15 @@ module count(
         begin
         
         //reset
-        //if (1) begin
-            //min1cnt = 4'b0000; //Reset all time values to 0
-           // min0cnt = 4'b0000;
-           // sec0cnt = 4'b0000;
-           // sec1cnt = 4'b0000;
-        //end     
+        if (reset) begin
+            min1cnt = 4'b0000; //Reset all time values to 0
+            min0cnt = 4'b0000;
+            sec0cnt = 4'b0000;
+            sec1cnt = 4'b0000;
+        end     
         
-        //else begin
-        
+        //Regular clock function
+        else if (adjust == 0 && ~paused) begin
             if (sec0cnt == 9 && sec1cnt == 5) begin // If need to overflow into minutes
                 sec0cnt <= 0;
                 sec1cnt <= 0; //reset seconds to 0
@@ -97,17 +97,75 @@ module count(
             else begin
                 sec0cnt <= sec0cnt + 1;
                 end
-           
-       end
-       //$display("%d%d:%d%d", min1cnt, min0cnt, sec1cnt, sec0cnt);
+        end
 
-       //end
+        //Increase
+
+        //Seconds
+        else if (adjust == 1 && ~paused && select) begin
+            if (sec0cnt == 9 && sec1cnt == 5) begin
+                sec0cnt <= 0;
+                sec1cnt <= 0;
+            end
+            else if (sec0cnt == 9 ) begin
+                sec0cnt <= 0;
+                sec1cnt <= sec1cnt + 1;
+            end
+            else begin
+                sec0cnt <= sec0cnt + 1;
+            end
+        end
+
+        //minutes
+        else if (adjust == 1 && ~paused && ~select) begin
+            if (min0cnt == 9 && min1cnt == 9) begin
+                min0cnt <= 0;
+                min1cnt <= 0;
+            end
+            else if (min0cnt == 9) begin
+                min0cnt <= 0;
+                min1cnt <= min1cnt + 1;
+            end
+            else begin
+                min0cnt <= min0cnt + 1;
+            end
+        end
+
+        //Decrease
+        //Seconds
+        else if (adjust == 2 && ~paused && select) begin
+            if (sec0cnt == 0 && sec1cnt == 0) begin
+                sec0cnt <= 9;
+                sec1cnt <= 5;
+            end
+            else if (sec0cnt == 0) begin
+                sec0cnt <= 9;
+                sec1cnt <= sec1cnt - 1;
+            end
+            else begin
+                sec0cnt <= sec0cnt - 1;
+            end
+        end
+
+        //Minutes
+        else if (adjust == 2 && ~paused && ~select) begin
+            if (min0cnt == 0 && min1cnt == 0) begin
+                min0cnt <= 9;
+                min1cnt <= 9;
+            end
+            else if (min0cnt == 0) begin
+                min0cnt <= 9;
+                min1cnt <= min1cnt - 1;
+            end
+            else begin
+                min0cnt <= min0cnt - 1;
+            end
+        end      
+    end
        
-       assign min1 = min1cnt;
-       assign min0 = min0cnt;
-       assign sec1 = sec1cnt;
-       assign sec0 = sec0cnt;
-
-             
+    assign min1 = min1cnt;
+    assign min0 = min0cnt;
+    assign sec1 = sec1cnt;
+    assign sec0 = sec0cnt;
 
 endmodule
