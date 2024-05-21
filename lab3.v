@@ -43,6 +43,34 @@ module lab3(
     
     reg clock;
 
+    wire onehz;
+    wire twohz;
+    wire seghz;
+    wire blinkinghz;
+    wire rst;
+    wire paus;
+
+    debouncer reset_button(
+        .button_in(reset),
+        .clk(clk),
+        .button_out(rst)
+    );
+
+    debouncer pause_button(
+        .button_in(pause),
+        .clk(clk),
+        .button_out(paus)
+    );
+
+    clock_divider div(
+        .rst(rst),
+        .twoHz_clock(twohz),
+        .clk(clk),
+        .oneHz_clock(onehz),
+        .segment_clk(seghz),
+        .blinking_clk(blinkinghz)
+    );
+
     reg [1:0] which_digit = 2'b00;
     
     count count_uut(
@@ -76,14 +104,87 @@ module lab3(
                  .dig(sec0cnt),
                  .seven_seg_display(sevensec0)
                 );
-                
-    initial begin
-        //clock <= 0;
-        //#100 clock <= 1;
-    end
-                
-    always begin
-        //#100000 clock = ~clock;
+
+    wire[7:0] no_val;
+    seven no_value(
+        .dig(4'b1111),
+        seven_seg_display(no_val)
+    )
+
+    reg min = 0;
+    reg sec = 0;
+
+    always @(posedge seghz) begin
+        //blinking
+        if (adj == 2 || adj == 1) begin
+            if (select  == 0) begin //minutes 
+                if (which_digit == 0) begin
+                    which_digit <= 1;
+                    an <= 4'b0111;
+                    if (blinkinghz == 1) begin
+                        seven_seg_display <= sevenmin1;
+                    end
+                    else begin
+                        seven_seg <= no_value;
+                    end
+                end
+                else if (which_digit == 1) begin
+                    which_digit <= 2;
+                    an <= 4'b1011;
+                    if (blinkinghz == 1) begin
+                        seven_seg_display <= sevenmin0;
+                    end
+                    else begin
+                        seven_seg <= no_value;
+                    end
+                end
+                else if (which_digit == 2) begin
+                    which_digit <= 3;
+                    an <= 4'b1101;
+                    seven_seg_display <= sevensec1;
+                end
+                else if (which_digit == 3) begin
+                    which_digit <= 0;
+                    an <= 4'b1110;
+                    seven_seg_display <= sevensec0;
+                end
+            end
+
+        else begin
+            if (which_digit == 0) begin
+                which_digit = 1;
+                an <= 4'b0111;
+                seven_seg_display <= sevenmin1;
+            end
+            else if (which_digit == 1) begin
+                which_digit = 2;
+                an <= 4'b1011;
+                seven_seg_display <= sevenmin0;
+            end
+            else if (which_digit == 2) begin
+                which_digit = 3;
+                an <= 4'b1101;
+                if (blinkinghz == 1) begin
+                    seven_seg_display <= sevensec1;
+                end
+                else begin
+                    seven_seg_display <= no_value;
+                end
+            end
+            else if (which_digit == 3) begin
+                which_digit = 0;
+                an <= 4'b1110;
+                if (blinkinghz == 1) begin
+                    seven_seg_display <= sevensec0;
+                end
+                else begin
+                    seven_seg_display <= no_value;
+                end
+            end
+
+        end
+
+        else begin
         if (which_digit == 0) begin
             // switch digit
             which_digit <= 1;
@@ -124,5 +225,6 @@ module lab3(
             // + light up with the correct digit
             seven_seg_display <= sevensec0;
             end
+        end
+        end
     end
-endmodule
