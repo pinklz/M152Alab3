@@ -57,4 +57,3 @@ always @ (*) begin
 
 assign seven_seg_display = seven_segment;
 endmodule
-

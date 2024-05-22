@@ -25,7 +25,7 @@ module lab3(
     input reset,
     input pause,
     input select,
-    input wire [1:0] adj,
+    input wire adj,
     output reg [6:0] seven_seg_display,
     output reg [3:0] an
     
@@ -35,11 +35,14 @@ module lab3(
     wire [3:0] sec1cnt;
     wire [3:0] min0cnt;
     wire [3:0] min1cnt;
+    wire [3:0] ones = 4'b1111;
     
     wire [6:0] sevenmin1;
     wire [6:0] sevenmin0;
     wire [6:0] sevensec0;
     wire [6:0] sevensec1;
+    wire [6:0] no_val;
+    
     
     reg clock;
 
@@ -63,7 +66,7 @@ module lab3(
     );
 
     clock_divider div(
-        .rst(rst),
+        .reset(rst),
         .twoHz_clock(twohz),
         .clk(clk),
         .oneHz_clock(onehz),
@@ -74,8 +77,8 @@ module lab3(
     reg [1:0] which_digit = 2'b00;
     
     count count_uut(
-        .reset(reset),
-        .pause(pause),
+        .reset(rst),
+        .pause(paus),
         .adjust(adj),
         .select(select),
         .clk(clk),
@@ -101,31 +104,33 @@ module lab3(
              );
              
     seven sec0(
-                 .dig(sec0cnt),
-                 .seven_seg_display(sevensec0)
-                );
+        .dig(sec0cnt),
+        .seven_seg_display(sevensec0)
+        );
 
-    wire[7:0] no_val;
+
     seven no_value(
-        .dig(4'b1111),
-        seven_seg_display(no_val)
-    )
+        .dig(ones),
+        .seven_seg_display(no_val)
+    );
 
-    reg min = 0;
-    reg sec = 0;
-
+    // Where does the clock change?
     always @(posedge seghz) begin
         //blinking
-        if (adj == 2 || adj == 1) begin
-            if (select  == 0) begin //minutes 
+        if (adj == 1) begin     // IF IN adjust mode
+            if (select  == 0) begin //2x speed MINUTES
+
+            //which_digit selects which anode to light up
                 if (which_digit == 0) begin
                     which_digit <= 1;
                     an <= 4'b0111;
+
+                    //In addition to increasing twice as fast, needs to blink
                     if (blinkinghz == 1) begin
                         seven_seg_display <= sevenmin1;
                     end
                     else begin
-                        seven_seg <= no_value;
+                        seven_seg_display <= no_val;
                     end
                 end
                 else if (which_digit == 1) begin
@@ -135,7 +140,7 @@ module lab3(
                         seven_seg_display <= sevenmin0;
                     end
                     else begin
-                        seven_seg <= no_value;
+                        seven_seg_display <= no_val;
                     end
                 end
                 else if (which_digit == 2) begin
@@ -150,40 +155,42 @@ module lab3(
                 end
             end
 
-        else begin
+        else begin //blink SECONDS
             if (which_digit == 0) begin
-                which_digit = 1;
+                which_digit <= 1;
                 an <= 4'b0111;
                 seven_seg_display <= sevenmin1;
             end
             else if (which_digit == 1) begin
-                which_digit = 2;
+                which_digit <= 2;
                 an <= 4'b1011;
                 seven_seg_display <= sevenmin0;
             end
             else if (which_digit == 2) begin
-                which_digit = 3;
+                which_digit <= 3;
                 an <= 4'b1101;
                 if (blinkinghz == 1) begin
                     seven_seg_display <= sevensec1;
                 end
                 else begin
-                    seven_seg_display <= no_value;
+                    seven_seg_display <= no_val;
                 end
-            end
+            end 
+            
             else if (which_digit == 3) begin
-                which_digit = 0;
+                which_digit <= 0;
                 an <= 4'b1110;
                 if (blinkinghz == 1) begin
                     seven_seg_display <= sevensec0;
                 end
                 else begin
-                    seven_seg_display <= no_value;
+                    seven_seg_display <= no_val;
                 end
             end
-
+            end
         end
 
+        // Normal clock mode
         else begin
         if (which_digit == 0) begin
             // switch digit
@@ -226,5 +233,6 @@ module lab3(
             seven_seg_display <= sevensec0;
             end
         end
-        end
-    end
+     end
+endmodule
+

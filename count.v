@@ -24,7 +24,7 @@
 module count(
     input wire reset,
     input wire pause,
-    input wire [1:0] adjust,
+    input wire adjust,
     input wire select,
     input wire clk,
     input wire clk_adj,
@@ -41,7 +41,7 @@ module count(
     reg [3:0] sec0cnt = 4'b0000;
     reg [3:0] sec1cnt = 4'b0000;
     
-    wire clock;
+    reg clock;
     
     reg paused = 0;
 
@@ -54,34 +54,45 @@ module count(
             clock = clk_adj;
         end
     end
+    
+    always @(posedge clk or posedge pause) begin
+        if (pause) begin
+            paused <= ~paused;
+        end
+        else begin
+            paused <= paused;
+        end  
+    end
+    
 
     
     // Set up reset
-    always @(posedge clock)// or posedge reset) 
-        begin
+    always @(posedge clock) 
+        begin    
         
-        //reset
+        /*
         if (reset) begin
-            min1cnt = 4'b0000; //Reset all time values to 0
-            min0cnt = 4'b0000;
-            sec0cnt = 4'b0000;
-            sec1cnt = 4'b0000;
-        end     
+            min1cnt <= 4'b0000; //Reset all time values to 0
+            min0cnt <= 4'b0000;
+            sec0cnt <= 4'b0000;
+            sec1cnt <= 4'b0000;
+        end 
+        */
         
-        //Regular clock function
-        else if (adjust == 0 && ~paused) begin
+        //Regular clock 
+        if (adjust == 0 && ~paused) begin
             if (sec0cnt == 9 && sec1cnt == 5) begin // If need to overflow into minutes
                 sec0cnt <= 0;
                 sec1cnt <= 0; //reset seconds to 0
                 
                 //If minutes also overflow
-                if (min0cnt == 9 && min1cnt == 9) begin
-                    min0cnt <= 0;
-                    min1cnt <= 0;
+                if (min0cnt == 5 && min1cnt == 9) begin
+                    min0cnt <= 4'b0;
+                    min1cnt <= 4'b0;
                     end
                 //if need to update 10s minute
                 else if (min0cnt == 9) begin
-                    min0cnt <= 0;
+                    min0cnt <= 4'b0;
                     min1cnt <= min1cnt + 1;
                     end
                 else begin
@@ -91,7 +102,7 @@ module count(
                     
             end
             else if (sec0cnt == 9) begin
-                sec0cnt <= 0;
+                sec0cnt <= 4'b0;
                 sec1cnt <= sec1cnt + 1;
                 end
             else begin
@@ -104,11 +115,11 @@ module count(
         //Seconds
         else if (adjust == 1 && ~paused && select) begin
             if (sec0cnt == 9 && sec1cnt == 5) begin
-                sec0cnt <= 0;
-                sec1cnt <= 0;
+                sec0cnt <= 4'b0;
+                sec1cnt <= 4'b0;
             end
             else if (sec0cnt == 9 ) begin
-                sec0cnt <= 0;
+                sec0cnt <= 4'b0;
                 sec1cnt <= sec1cnt + 1;
             end
             else begin
@@ -119,48 +130,17 @@ module count(
         //minutes
         else if (adjust == 1 && ~paused && ~select) begin
             if (min0cnt == 9 && min1cnt == 9) begin
-                min0cnt <= 0;
-                min1cnt <= 0;
+                min0cnt <= 4'b0;
+                min1cnt <= 4'b0;
             end
             else if (min0cnt == 9) begin
-                min0cnt <= 0;
+                min0cnt <= 4'b0;
                 min1cnt <= min1cnt + 1;
             end
             else begin
                 min0cnt <= min0cnt + 1;
             end
-        end
-
-        //Decrease
-        //Seconds
-        else if (adjust == 2 && ~paused && select) begin
-            if (sec0cnt == 0 && sec1cnt == 0) begin
-                sec0cnt <= 9;
-                sec1cnt <= 5;
-            end
-            else if (sec0cnt == 0) begin
-                sec0cnt <= 9;
-                sec1cnt <= sec1cnt - 1;
-            end
-            else begin
-                sec0cnt <= sec0cnt - 1;
-            end
-        end
-
-        //Minutes
-        else if (adjust == 2 && ~paused && ~select) begin
-            if (min0cnt == 0 && min1cnt == 0) begin
-                min0cnt <= 9;
-                min1cnt <= 9;
-            end
-            else if (min0cnt == 0) begin
-                min0cnt <= 9;
-                min1cnt <= min1cnt - 1;
-            end
-            else begin
-                min0cnt <= min0cnt - 1;
-            end
-        end      
+        end    
     end
        
     assign min1 = min1cnt;

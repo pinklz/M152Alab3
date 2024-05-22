@@ -1,13 +1,9 @@
-/* debouncer:
-    "sample at a frequency lower than that of the noise"
-
-*/
 
 module debouncer(
     input clk,
     input button_in,
 
-    output button_out,
+    output button_out
 );
 
 reg [15:0] mask;       // counter register

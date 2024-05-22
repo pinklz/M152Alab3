@@ -31,11 +31,13 @@ output wire blinking_clk
     
     localparam toOneHz = 100000000;
     localparam toTwoHz = 50000000;
-    localparam two_divider = 25000000;
-    localparam one_divider = 50000000;
+    localparam two_divider = 2500000;
+    localparam one_divider = 5000000;
+    
+    //
     
     //For segment clock frequency of 500hz
-    localparam toSegmentHz = 200000;
+    localparam toSegmentHz = 10000; //1000
     
     //For blinking clock freqeuncy of 5hz
     localparam toBlinkingHz = 20000000;
@@ -57,7 +59,7 @@ output wire blinking_clk
             oneHz_clock_counter <= 32'b0;
             one <= 0;
         end
-        else if (oneHz_clock_counter == one_divider - 1) begin
+        else if (oneHz_clock_counter == toOneHz - 1) begin
             one <= ~oneHz_clock;
             oneHz_clock_counter <= 32'b0;
         end
@@ -71,7 +73,7 @@ output wire blinking_clk
             two <= 0;
             twoHz_clock_counter <= 32'b0;
         end
-        else if (twoHz_clock_counter == two_divider - 1) begin
+        else if (twoHz_clock_counter == toTwoHz - 1) begin
             two <= ~twoHz_clock;
             twoHz_clock_counter <= 32'b0;
         end
@@ -84,7 +86,7 @@ output wire blinking_clk
             segment_clock_counter <= 32'b0;
             seg <= 1;
         end
-        else if (segment_clock_counter == 50000 - 1) begin
+        else if (segment_clock_counter == toSegmentHz - 1) begin
             segment_clock_counter <= 32'b0;
             seg <= ~segment_clk;
         end
@@ -99,9 +101,9 @@ output wire blinking_clk
             blinking_clock_counter <= 32'b0;
             blnk <= 1;
         end
-        else if (blinking_clock_counter == 12500000 - 1) begin
+        else if (blinking_clock_counter == toBlinkingHz - 1) begin
             blinking_clock_counter <= 32'b0;
-            blnk <= ~blinking_clk_clk;
+            blnk <= ~blinking_clk;
         end
         else begin
             blinking_clock_counter <= blinking_clock_counter + 32'b1;
@@ -118,4 +120,4 @@ output wire blinking_clk
     assign blinking_clk = blnk;
 
 
-endmodule
+endmodule  
