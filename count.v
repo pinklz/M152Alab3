@@ -70,14 +70,14 @@ module count(
     always @(posedge clock) 
         begin    
         
-        /*
+        
         if (reset) begin
             min1cnt <= 4'b0000; //Reset all time values to 0
             min0cnt <= 4'b0000;
             sec0cnt <= 4'b0000;
             sec1cnt <= 4'b0000;
         end 
-        */
+        
         
         //Regular clock 
         if (adjust == 0 && ~paused) begin
