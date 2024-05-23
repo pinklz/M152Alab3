@@ -6,7 +6,7 @@ module debouncer(
     output button_out
 );
 
-reg [15:0] mask;       // counter register
+reg [7:0] mask;       // counter register
 reg button = 0;
 
 always @(posedge clk) begin
@@ -16,7 +16,7 @@ always @(posedge clk) begin
     end
     else begin
         mask <= mask + 1;
-        if (mask == 16'b1111111111111111) begin
+        if (mask == 8'b11111111) begin
             button <= 1;
             mask <= 0;
         end

@@ -114,7 +114,7 @@ module count(
 
         //Seconds
         else if (adjust == 1 && ~paused && select) begin
-            if (sec0cnt == 9 && sec1cnt == 5) begin
+            if (sec0cnt == 5 && sec1cnt == 9) begin
                 sec0cnt <= 4'b0;
                 sec1cnt <= 4'b0;
             end
@@ -129,7 +129,7 @@ module count(
 
         //minutes
         else if (adjust == 1 && ~paused && ~select) begin
-            if (min0cnt == 9 && min1cnt == 9) begin
+            if (min0cnt == 5 && min1cnt == 9) begin
                 min0cnt <= 4'b0;
                 min1cnt <= 4'b0;
             end
